@@ -1,6 +1,6 @@
 {
   "name": "randiris-cctv-viewer",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Randiris Home CCTV-Viewer - A lightweight self-hosted CCTV viewer application",
   "author": "Botro",
   "license": "MIT",
