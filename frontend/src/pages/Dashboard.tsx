@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { Camera } from '../../../electron/shared/types';
 import { useCameraStore } from '../stores/camera-store';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -18,6 +18,7 @@ export default function Dashboard({ onAddCamera }: DashboardProps) {
   const [gridSize, setGridSize] = useState<'1x1' | '2x2' | '3x3' | '4x4'>('2x2');
   const [currentPage, setCurrentPage] = useState(0);
   const [expandedCamera, setExpandedCamera] = useState<Camera | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const { streams } = useStreamStore();
   const onlineCount = useMemo(() => {
@@ -38,6 +39,9 @@ export default function Dashboard({ onAddCamera }: DashboardProps) {
 
   useEffect(() => {
     setCurrentPage(0);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
   }, [gridSize]);
 
   useEffect(() => {
@@ -153,72 +157,68 @@ export default function Dashboard({ onAddCamera }: DashboardProps) {
         </div>
       </header>
 
-      {/* Camera Grid - stays visible, modal overlay covers it */}
+      {/* Camera Grid */}
       <div
-        className="flex-1 min-h-0 overflow-y-auto snap-y snap-mandatory overscroll-y-contain pb-8 md:pb-10"
+        ref={scrollContainerRef}
+        className="flex-1 min-h-0 overflow-y-auto snap-y snap-mandatory overscroll-y-contain"
         onScroll={(e) => {
           const el = e.currentTarget;
-          const pageHeight = el.clientHeight;
-          const newPage = Math.round(el.scrollTop / pageHeight);
+          const newPage = Math.round(el.scrollTop / el.clientHeight);
           if (newPage !== currentPage && newPage >= 0 && newPage < totalPages) {
             setCurrentPage(newPage);
           }
         }}
       >
-          {enabledCameras.length === 0 ? (
-            <div className="p-2 md:p-4">
-              <Card className="max-w-md mx-auto mt-10 md:mt-20">
-                <CardHeader>
-                  <CardTitle className="text-lg md:text-xl">
-                    No Cameras Configured
-                  </CardTitle>
-                </CardHeader>
-
-                <CardContent>
-                  <p className="text-sm md:text-base text-muted-foreground mb-4">
-                    Add your first camera to start viewing live streams.
-                  </p>
-
-                  <Button onClick={onAddCamera} className="w-full sm:w-auto">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Camera
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          ) : (
-            cameraPages.map((pageCameras, pageIndex) => {
-              const config = getGridConfig();
-
-              return (
-                <section
-                  key={pageIndex}
-                  className="snap-start h-full overflow-hidden pb-2 md:pb-4"
-                  data-page={pageIndex}
+        {enabledCameras.length === 0 ? (
+          <div className="h-full flex items-center justify-center p-4">
+            <Card className="max-w-md w-full">
+              <CardHeader>
+                <CardTitle className="text-lg md:text-xl">No Cameras Configured</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm md:text-base text-muted-foreground mb-4">
+                  Add your first camera to start viewing live streams.
+                </p>
+                <Button onClick={onAddCamera} className="w-full sm:w-auto">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Camera
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          cameraPages.map((pageCameras, pageIndex) => {
+            const config = getGridConfig();
+            return (
+              <section
+                key={pageIndex}
+                data-page={pageIndex}
+                className="snap-start w-full"
+                style={{ height: '100%' }}
+              >
+                <div
+                  className="w-full h-full p-1 md:p-2"
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: `repeat(${config.cols}, minmax(0, 1fr))`,
+                    gridTemplateRows: `repeat(${config.rows}, minmax(0, 1fr))`,
+                    gap: '4px',
+                    boxSizing: 'border-box',
+                  }}
                 >
-                  <div className="h-full px-2 md:px-4 pt-0 pb-2 md:pb-4">
-                    <div
-                      className="grid w-full h-full gap-1 md:gap-2"
-                      style={{
-                        gridTemplateColumns: `repeat(${config.cols}, minmax(0, 1fr))`,
-                        gridTemplateRows: `repeat(${config.rows}, minmax(0, 1fr))`,
-                      }}
-                    >
-                      {pageCameras.map((camera) => (
-                        <div key={camera.id} className="flex items-center justify-center">
-                          <CameraCard
-                            camera={camera}
-                            onClick={() => handleCameraClick(camera)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </section>
-              );
-            })
-          )}
-        </div>
+                  {pageCameras.map((camera) => (
+                    <CameraCard
+                      key={camera.id}
+                      camera={camera}
+                      onClick={() => handleCameraClick(camera)}
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          })
+        )}
+      </div>
 
       {/* Page Navigation Dots */}
       {totalPages > 1 && (
@@ -228,8 +228,12 @@ export default function Dashboard({ onAddCamera }: DashboardProps) {
               key={i}
               onClick={() => {
                 setCurrentPage(i);
-                const container = document.querySelector('[data-page="' + i + '"]');
-                container?.scrollIntoView({ behavior: 'smooth' });
+                if (scrollContainerRef.current) {
+                  scrollContainerRef.current.scrollTo({
+                    top: i * scrollContainerRef.current.clientHeight,
+                    behavior: 'smooth',
+                  });
+                }
               }}
               className={`w-2.5 h-2.5 rounded-full transition-colors ${
                 i === currentPage ? 'bg-primary' : 'bg-primary/30 hover:bg-primary/50'
@@ -274,34 +278,31 @@ function CameraCard({
   onClick: () => void;
 }) {
   return (
-    <Card
-      className="relative w-full aspect-video overflow-hidden bg-black cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+    <div
+      className="relative w-full h-full overflow-hidden bg-black rounded-md cursor-pointer ring-1 ring-white/10 hover:ring-2 hover:ring-primary transition-all"
       onClick={onClick}
     >
+      {/* Video fills entire cell */}
+      <VideoPlayer
+        cameraId={camera.id}
+        streamType="mjpeg"
+        className="w-full h-full"
+      />
+
       {/* Overlay Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/70 to-transparent p-2 md:p-3">
-        <div className="flex items-center justify-between gap-2">
-          <h3 className="text-white text-xs md:text-sm font-medium truncate">
+      <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/75 to-transparent px-2 py-1.5 pointer-events-none">
+        <div className="flex items-center justify-between gap-1">
+          <h3 className="text-white text-[10px] md:text-xs font-medium truncate leading-tight">
             {camera.name}
           </h3>
-
           <Badge
             variant="outline"
-            className="bg-black/40 text-white border-white/20 text-[10px] md:text-xs shrink-0"
+            className="bg-black/40 text-white border-white/20 text-[9px] md:text-[10px] shrink-0 px-1 py-0 leading-tight"
           >
             {camera.brand}
           </Badge>
         </div>
       </div>
-
-      {/* Video Area */}
-      <div className="w-full h-full flex items-center justify-center overflow-hidden">
-        <VideoPlayer
-          cameraId={camera.id}
-          streamType="mjpeg"
-          className="w-full h-full object-cover"
-        />
-      </div>
-    </Card>
+    </div>
   );
 }
