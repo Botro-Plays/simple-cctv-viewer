@@ -39,16 +39,16 @@ function App() {
   const renderPage = () => {
     return (
       <>
-        <div className={currentPage === 'dashboard' ? 'block' : 'hidden'}>
+        <div className={currentPage === 'dashboard' ? 'h-full' : 'hidden'}>
           <Dashboard onAddCamera={() => { setCurrentPage('cameras'); setShowAddCamera(true); }} />
         </div>
-        <div className={currentPage === 'cameras' ? 'block' : 'hidden'}>
+        <div className={currentPage === 'cameras' ? 'h-full' : 'hidden'}>
           <Cameras showAddForm={showAddCamera} onFormClose={() => setShowAddCamera(false)} />
         </div>
-        <div className={currentPage === 'settings' ? 'block' : 'hidden'}>
+        <div className={currentPage === 'settings' ? 'h-full' : 'hidden'}>
           <Settings />
         </div>
-        <div className={currentPage === 'about' ? 'block' : 'hidden'}>
+        <div className={currentPage === 'about' ? 'h-full' : 'hidden'}>
           <About />
         </div>
       </>
