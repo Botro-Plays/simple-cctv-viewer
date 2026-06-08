@@ -16,6 +16,7 @@
     "preview": "cd frontend && vite preview",
     "pack": "electron-builder --dir",
     "bump": "node scripts/bump-version.js",
+    "push": "node scripts/push-with-tag.js",
     "dist": "npm run bump && npm run build && electron-builder",
     "dist:win": "npm run bump && npm run build && electron-builder --win",
     "dist:linux": "npm run bump && npm run build && electron-builder --linux"
