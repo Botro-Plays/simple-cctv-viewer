@@ -15,9 +15,10 @@
     "build:electron": "electron-vite build",
     "preview": "cd frontend && vite preview",
     "pack": "electron-builder --dir",
-    "dist": "npm run build && electron-builder",
-    "dist:win": "npm run build && electron-builder --win",
-    "dist:linux": "npm run build && electron-builder --linux"
+    "bump": "node scripts/bump-version.js",
+    "dist": "npm run bump && npm run build && electron-builder",
+    "dist:win": "npm run bump && npm run build && electron-builder --win",
+    "dist:linux": "npm run bump && npm run build && electron-builder --linux"
   },
   "devDependencies": {
     "@types/node": "^20.11.0",

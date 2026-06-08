@@ -1,6 +1,7 @@
 {
   "appId": "com.randiris.cctv-viewer",
   "productName": "Randiris Home CCTV-Viewer",
+  "artifactName": "${productName}.${ext}",
   "directories": {
     "output": "dist",
     "buildResources": "resources"
@@ -30,6 +31,7 @@
     "icon": "resources/icons/icon.ico"
   },
   "nsis": {
+    "artifactName": "${productName} Setup.${ext}",
     "oneClick": false,
     "allowToChangeInstallationDirectory": true,
     "createDesktopShortcut": true,

@@ -32,3 +32,6 @@ Thumbs.db
 
 # Reference / external projects
 xxxReference-Alert-System/
+
+# Test / build artifacts
+test-prod/
