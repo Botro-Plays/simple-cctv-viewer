@@ -1,6 +1,6 @@
 {
   "name": "randiris-cctv-viewer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Randiris Home CCTV-Viewer - A lightweight self-hosted CCTV viewer application",
   "author": "Botro",
   "license": "MIT",
@@ -46,6 +46,7 @@
   "build": {
     "appId": "com.randiris.cctv-viewer",
     "productName": "Randiris Home CCTV-Viewer",
+    "artifactName": "${productName}.${ext}",
     "directories": {
       "output": "dist",
       "buildResources": "resources"
@@ -86,6 +87,7 @@
       "icon": "resources/icons/icon.png"
     },
     "nsis": {
+      "artifactName": "${productName} Setup.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
