@@ -115,6 +115,12 @@ function App() {
 }
 
 function About() {
+  const [version, setVersion] = useState<string>('...');
+
+  useEffect(() => {
+    electronAPI.getVersion().then(setVersion).catch(() => setVersion('unknown'));
+  }, []);
+
   return (
     <div className="h-full overflow-auto p-6">
       <div className="max-w-2xl mx-auto">
@@ -147,7 +153,7 @@ function About() {
           </div>
           <div className="border rounded-lg p-4 bg-card">
             <h2 className="text-lg font-semibold mb-2">Version</h2>
-            <p className="text-sm text-muted-foreground">1.0.0 (Phase 1)</p>
+            <p className="text-sm text-muted-foreground">{version}</p>
           </div>
         </div>
       </div>
