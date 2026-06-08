@@ -47,14 +47,14 @@ export default function Settings() {
 
   if (loading) {
     return (
-      <div className="h-[calc(100vh-4rem)] flex items-center justify-center">
+      <div className="h-full flex items-center justify-center">
         <p className="text-muted-foreground">Loading settings...</p>
       </div>
     );
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-auto p-6">
+    <div className="h-full overflow-auto p-6">
       <div className="max-w-2xl mx-auto">
         <div className="mb-6">
           <h1 className="text-2xl font-bold">Settings</h1>

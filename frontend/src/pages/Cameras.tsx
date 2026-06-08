@@ -120,12 +120,12 @@ export default function Cameras({ showAddForm: externalShowAddForm, onFormClose 
   };
 
   if (isLoading) {
-    return <div className="h-[calc(100vh-4rem)] overflow-auto p-6">Loading cameras...</div>;
+    return <div className="h-full overflow-auto p-6">Loading cameras...</div>;
   }
 
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-y-auto p-6">
+    <div className="h-full overflow-y-auto p-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Cameras</h1>

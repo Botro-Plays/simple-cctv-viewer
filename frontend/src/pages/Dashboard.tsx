@@ -116,14 +116,14 @@ export default function Dashboard({ onAddCamera }: DashboardProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center h-full">
         <div className="text-muted-foreground">Loading cameras...</div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden relative">
+    <div className="h-full flex flex-col bg-background overflow-hidden relative">
       {/* Header */}
       <header className="border-b px-4 md:px-6 py-3 md:py-4 flex items-center justify-between shrink-0">
         <div className="min-w-0">

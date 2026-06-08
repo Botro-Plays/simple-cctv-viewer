@@ -60,8 +60,8 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <nav className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-3 md:px-6 py-2 md:py-3 flex items-center gap-2 md:gap-4 overflow-x-auto">
+    <div className="h-screen flex flex-col bg-background text-foreground overflow-hidden">
+      <nav className="shrink-0 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-3 md:px-6 py-2 md:py-3 flex items-center gap-2 md:gap-4 overflow-x-auto z-50">
         <Button
           variant={currentPage === 'dashboard' ? 'default' : 'ghost'}
           onClick={() => setCurrentPage('dashboard')}
@@ -107,14 +107,16 @@ function App() {
           <span className="hidden sm:inline">{isDark ? 'Light' : 'Dark'}</span>
         </Button>
       </nav>
-      {renderPage()}
+      <main className="flex-1 min-h-0 overflow-hidden">
+        {renderPage()}
+      </main>
     </div>
   );
 }
 
 function About() {
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-auto p-6">
+    <div className="h-full overflow-auto p-6">
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-4">About Randiris Home CCTV-Viewer</h1>
         <div className="space-y-4">
