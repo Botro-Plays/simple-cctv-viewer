@@ -1,0 +1,102 @@
+{
+  "name": "randiris-cctv-viewer",
+  "version": "1.0.0",
+  "description": "Randiris Home CCTV-Viewer - A lightweight self-hosted CCTV viewer application",
+  "author": "Botro",
+  "license": "MIT",
+  "private": true,
+  "main": "out/main/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:electron\" \"npm run dev:frontend\"",
+    "dev:electron": "electron-vite dev",
+    "dev:frontend": "cd frontend && vite",
+    "build": "npm run build:frontend && npm run build:electron",
+    "build:frontend": "cd frontend && vite build",
+    "build:electron": "electron-vite build",
+    "preview": "cd frontend && vite preview",
+    "pack": "electron-builder --dir",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:linux": "npm run build && electron-builder --linux"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/sql.js": "^1.4.11",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.17",
+    "concurrently": "^8.2.2",
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.1",
+    "electron-vite": "^2.0.0",
+    "png-to-ico": "^3.0.1",
+    "postcss": "^8.4.33",
+    "sharp": "^0.34.5",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "fastify": "^4.26.0",
+    "sql.js": "^1.10.3",
+    "zustand": "^4.5.0"
+  },
+  "build": {
+    "appId": "com.randiris.cctv-viewer",
+    "productName": "Randiris Home CCTV-Viewer",
+    "directories": {
+      "output": "dist",
+      "buildResources": "resources"
+    },
+    "files": [
+      "out/**/*",
+      "frontend/dist/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/sql.js/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/ffmpeg",
+        "to": "ffmpeg"
+      },
+      {
+        "from": "node_modules/sql.js/dist/sql-wasm.wasm",
+        "to": "sql-wasm.wasm"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "resources/icons/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Randiris CCTV Viewer"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "resources/icons/icon.png",
+      "category": "Video"
+    }
+  }
+}

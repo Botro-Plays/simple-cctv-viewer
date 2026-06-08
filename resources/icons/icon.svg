@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" shape-rendering="geometricPrecision">
+  <!-- Dark background -->
+  <rect x="0" y="0" width="512" height="512" rx="80" fill="#111118"/>
+
+  <!-- Outer ring / bezel -->
+  <circle cx="256" cy="256" r="170" fill="none" stroke="#be123c" stroke-width="14"/>
+
+  <!-- Lens housing -->
+  <circle cx="256" cy="256" r="150" fill="#0f0f1a" stroke="#1f1f2e" stroke-width="4"/>
+
+  <!-- Inner ring -->
+  <circle cx="256" cy="256" r="110" fill="none" stroke="#9f1239" stroke-width="6"/>
+
+  <!-- Iris -->
+  <circle cx="256" cy="256" r="85" fill="#be123c"/>
+
+  <!-- Inner glow ring -->
+  <circle cx="256" cy="256" r="55" fill="none" stroke="#fb7185" stroke-width="3" opacity="0.6"/>
+
+  <!-- Pupil -->
+  <circle cx="256" cy="256" r="38" fill="#000"/>
+
+  <!-- Lens glare -->
+  <ellipse cx="220" cy="215" rx="28" ry="16" fill="rgba(255,255,255,0.18)" transform="rotate(-25 220 215)"/>
+
+  <!-- Recording indicator -->
+  <circle cx="400" cy="112" r="22" fill="#ef4444"/>
+  <circle cx="400" cy="112" r="22" fill="none" stroke="#ef4444" stroke-width="4" opacity="0.4">
+    <animate attributeName="r" values="22;30;22" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.4;0;0.4" dur="2s" repeatCount="indefinite"/>
+  </circle>
+</svg>

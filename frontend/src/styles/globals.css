@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* CCTV Security Theme - Light Mode */
+    --background: 210 40% 98%;
+    --foreground: 217 20% 25%;
+    --card: 0 0% 100%;
+    --card-foreground: 217 20% 25%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 217 20% 25%;
+    /* Primary: Security Blue */
+    --primary: 210 100% 45%;
+    --primary-foreground: 0 0% 100%;
+    /* Secondary: Cool Gray */
+    --secondary: 210 20% 90%;
+    --secondary-foreground: 217 20% 25%;
+    /* Muted: Soft Gray */
+    --muted: 210 20% 94%;
+    --muted-foreground: 215 15% 45%;
+    /* Accent: Alert/Action */
+    --accent: 199 89% 48%;
+    --accent-foreground: 0 0% 100%;
+    /* Destructive: Recording Red */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 20% 90%;
+    --input: 214 20% 90%;
+    --ring: 210 100% 45%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* CCTV Security Theme - Dark Mode (default for CCTV apps) */
+    --background: 217 25% 12%;
+    --foreground: 210 20% 95%;
+    --card: 217 25% 15%;
+    --card-foreground: 210 20% 95%;
+    --popover: 217 25% 15%;
+    --popover-foreground: 210 20% 95%;
+    /* Primary: Security Blue (lighter for dark mode) */
+    --primary: 210 100% 55%;
+    --primary-foreground: 0 0% 100%;
+    /* Secondary: Dark Gray */
+    --secondary: 217 25% 20%;
+    --secondary-foreground: 210 20% 95%;
+    /* Muted: Darker Gray */
+    --muted: 217 25% 18%;
+    --muted-foreground: 215 15% 65%;
+    /* Accent: Cyan for highlights */
+    --accent: 199 89% 60%;
+    --accent-foreground: 0 0% 100%;
+    /* Destructive: Recording Red */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 217 25% 25%;
+    --input: 217 25% 25%;
+    --ring: 210 100% 55%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    overflow: hidden; /* No global scrollbar */
+  }
+  html {
+    overflow: hidden; /* No global scrollbar */
+  }
+}
+
+/* Hide scrollbar when not needed, show when content overflows */
+* {
+  scrollbar-width: auto;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}

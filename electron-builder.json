@@ -1,0 +1,44 @@
+{
+  "appId": "com.randiris.cctv-viewer",
+  "productName": "Randiris Home CCTV-Viewer",
+  "directories": {
+    "output": "dist",
+    "buildResources": "resources"
+  },
+  "files": [
+    "out/**/*",
+    "frontend/dist/**/*",
+    "package.json"
+  ],
+  "extraResources": [
+    {
+      "from": "resources/ffmpeg",
+      "to": "ffmpeg"
+    }
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      },
+      {
+        "target": "portable",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "resources/icons/icon.ico"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Randiris CCTV Viewer"
+  },
+  "linux": {
+    "target": ["AppImage", "deb"],
+    "icon": "resources/icons/icon.png",
+    "category": "Video"
+  }
+}

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" shape-rendering="geometricPrecision">
+  <!-- Dark background -->
+  <rect x="0" y="0" width="512" height="512" rx="80" fill="#111118"/>
+
+  <!-- Outer ring / bezel -->
+  <circle cx="256" cy="256" r="170" fill="none" stroke="#be123c" stroke-width="14"/>
+
+  <!-- Lens housing -->
+  <circle cx="256" cy="256" r="150" fill="#0f0f1a" stroke="#1f1f2e" stroke-width="4"/>
+
+  <!-- Inner ring -->
+  <circle cx="256" cy="256" r="110" fill="none" stroke="#9f1239" stroke-width="6"/>
+
+  <!-- Iris -->
+  <circle cx="256" cy="256" r="85" fill="#be123c"/>
+
+  <!-- Inner glow ring -->
+  <circle cx="256" cy="256" r="55" fill="none" stroke="#fb7185" stroke-width="3" opacity="0.6"/>
+
+  <!-- Pupil -->
+  <circle cx="256" cy="256" r="38" fill="#000"/>
+
+  <!-- Lens glare -->
+  <ellipse cx="220" cy="215" rx="28" ry="16" fill="rgba(255,255,255,0.18)" transform="rotate(-25 220 215)"/>
+
+  <!-- Gear Overlay (Installer) -->
+  <circle cx="400" cy="400" r="70" fill="#22c55e" stroke="#16a34a" stroke-width="4"/>
+  <circle cx="400" cy="400" r="25" fill="#111118"/>
+  <rect x="390" y="300" width="20" height="35" fill="#22c55e"/>
+  <rect x="390" y="465" width="20" height="35" fill="#22c55e"/>
+  <rect x="300" y="390" width="35" height="20" fill="#22c55e"/>
+  <rect x="465" y="390" width="35" height="20" fill="#22c55e"/>
+</svg>
