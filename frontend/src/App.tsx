@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard';
 import Cameras from './pages/Cameras';
 import Settings from './pages/Settings';
+import Logs from './pages/Logs';
 import { Button } from './components/ui/button';
-import { Video, Settings as SettingsIcon, Info, RefreshCw, Moon, Sun } from 'lucide-react';
+import { Video, Settings as SettingsIcon, Info, RefreshCw, Moon, Sun, Terminal } from 'lucide-react';
 import { electronAPI } from './lib/api';
 
-type Page = 'dashboard' | 'cameras' | 'settings' | 'about';
+type Page = 'dashboard' | 'cameras' | 'settings' | 'logs' | 'about';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
@@ -48,6 +49,9 @@ function App() {
         <div className={currentPage === 'settings' ? 'h-full' : 'hidden'}>
           <Settings />
         </div>
+        <div className={currentPage === 'logs' ? 'h-full' : 'hidden'}>
+          <Logs />
+        </div>
         <div className={currentPage === 'about' ? 'h-full' : 'hidden'}>
           <About />
         </div>
@@ -87,6 +91,15 @@ function App() {
         >
           <SettingsIcon className="w-4 h-4 mr-1 md:mr-2" />
           <span className="hidden sm:inline">Settings</span>
+        </Button>
+        <Button
+          variant={currentPage === 'logs' ? 'default' : 'ghost'}
+          onClick={() => setCurrentPage('logs')}
+          size="sm"
+          className="whitespace-nowrap"
+        >
+          <Terminal className="w-4 h-4 mr-1 md:mr-2" />
+          <span className="hidden sm:inline">Logs</span>
         </Button>
         <Button
           variant={currentPage === 'about' ? 'default' : 'ghost'}

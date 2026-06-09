@@ -16,6 +16,10 @@ declare global {
       removeStreamStatusListener: () => void;
       onRecordingStatus: (callback: (event: any, data: any) => void) => void;
       removeRecordingStatusListener: () => void;
+      getLogs: () => Promise<{ id: number; ts: string; level: string; msg: string }[]>;
+      clearLogs: () => void;
+      onLog: (callback: (entry: { id: number; ts: string; level: string; msg: string }) => void) => void;
+      removeLogListener: () => void;
     };
   }
 }

@@ -9,6 +9,33 @@ import { API_BASE } from '../shared/config';
 let mainWindow: BrowserWindow | null = null;
 let powerSaveBlockId: number | null = null;
 
+// ── Log collector ────────────────────────────────────────────────────────────
+interface LogEntry { id: number; ts: string; level: string; msg: string; }
+const logBuffer: LogEntry[] = [];
+let logSeq = 0;
+
+function pushLog(level: string, args: any[]) {
+  const entry: LogEntry = {
+    id: ++logSeq,
+    ts: new Date().toISOString(),
+    level,
+    msg: args.map((a) => (typeof a === 'string' ? a : JSON.stringify(a))).join(' '),
+  };
+  logBuffer.push(entry);
+  if (logBuffer.length > 500) logBuffer.shift();
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.webContents.send('logs:entry', entry);
+  }
+}
+
+const _log = console.log.bind(console);
+const _warn = console.warn.bind(console);
+const _error = console.error.bind(console);
+console.log   = (...a) => { _log(...a);   pushLog('info',  a); };
+console.warn  = (...a) => { _warn(...a);  pushLog('warn',  a); };
+console.error = (...a) => { _error(...a); pushLog('error', a); };
+// ─────────────────────────────────────────────────────────────────────────────
+
 // Detect portable build and set environment variable
 if (app.isPackaged) {
   const execPath = path.dirname(process.execPath);
@@ -56,14 +83,13 @@ function createWindow() {
     mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
   }
 
-  // Forward renderer console logs to main process terminal (dev only)
-  if (isDev) {
-    mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
-      const labels = ['debug', 'log', 'warn', 'error'];
-      const label = labels[level] || 'log';
-      console.log(`[Renderer:${label}] ${message}`);
-    });
-  }
+  // Forward renderer console logs into the log buffer (always, not just dev)
+  mainWindow.webContents.on('console-message', (_ev, level, message) => {
+    const labels = ['debug', 'info', 'warn', 'error'];
+    const label = labels[level] || 'info';
+    pushLog(label, [`[Renderer] ${message}`]);
+    if (isDev) _log(`[Renderer:${label}] ${message}`);
+  });
 
   // Remove default menu
   Menu.setApplicationMenu(null);
@@ -120,9 +146,11 @@ app.on('will-quit', (e) => {
 });
 
 // IPC handlers
-ipcMain.handle('app:getVersion', () => {
-  return app.getVersion();
-});
+ipcMain.handle('app:getVersion', () => app.getVersion());
+
+ipcMain.handle('logs:get', () => [...logBuffer]);
+
+ipcMain.on('logs:clear', () => { logBuffer.length = 0; });
 
 // Camera IPC handlers - proxy to backend
 ipcMain.handle('cameras:getAll', async () => {

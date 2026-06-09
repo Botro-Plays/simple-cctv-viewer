@@ -20,6 +20,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
   stopStream: (cameraId: string) => ipcRenderer.invoke('streams:stop', cameraId),
   getStreamDiagnostics: (cameraId: string) => ipcRenderer.invoke('streams:diagnostics', cameraId),
   
+  // Logs
+  getLogs: () => ipcRenderer.invoke('logs:get'),
+  clearLogs: () => ipcRenderer.send('logs:clear'),
+  onLog: (callback: (entry: any) => void) => {
+    ipcRenderer.on('logs:entry', (_event, entry) => callback(entry));
+  },
+  removeLogListener: () => ipcRenderer.removeAllListeners('logs:entry'),
+
   // Events
   onStreamStatus: (callback: (event: any, data: any) => void) => {
     ipcRenderer.on('streams:status', callback);
