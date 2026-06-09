@@ -162,10 +162,14 @@ export class BackendService {
       const cameraId = request.params.cameraId;
       console.log(`GET /api/streams/${cameraId}/mjpeg`);
 
+      // IMPORTANT: return the Promise so Fastify waits and does NOT send a
+      // premature empty 200 response that races against writeHead().
+      return new Promise<void>((resolveHandler) => {
       databaseService.getCamera(cameraId).then((camera: any) => {
         if (!camera) {
           console.log(`Camera not found: ${cameraId}`);
           reply.status(404).send({ error: 'Camera not found' });
+          resolveHandler();
           return;
         }
 
@@ -200,9 +204,9 @@ export class BackendService {
             }
           };
 
-          request.raw.on('close', removeClient);
-          reply.raw.on('close', removeClient);
-          reply.raw.on('error', removeClient);
+          request.raw.on('close', () => { removeClient(); resolveHandler(); });
+          reply.raw.on('close', () => { removeClient(); resolveHandler(); });
+          reply.raw.on('error', () => { removeClient(); resolveHandler(); });
         } else {
           // Start new FFmpeg
           if (stream) {
@@ -320,9 +324,9 @@ export class BackendService {
             }
           };
 
-          request.raw.on('close', removeClient);
-          reply.raw.on('close', removeClient);
-          reply.raw.on('error', removeClient);
+          request.raw.on('close', () => { removeClient(); resolveHandler(); });
+          reply.raw.on('close', () => { removeClient(); resolveHandler(); });
+          reply.raw.on('error', () => { removeClient(); resolveHandler(); });
 
           this.activeStreams.set(cameraId, stream);
         }
@@ -332,7 +336,9 @@ export class BackendService {
         if (!reply.raw.headersSent) {
           reply.status(500).send({ error: 'Failed to start stream' });
         }
+        resolveHandler();
       });
+      }); // end returned Promise
     });
 
     // Stream info endpoint (like alert system's /api/cctv/info)
