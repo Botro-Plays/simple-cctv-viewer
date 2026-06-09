@@ -228,7 +228,7 @@ export class BackendService {
             '-f', 'mjpeg',
             '-q:v', '5',
             '-r', '15',
-            '-vf', 'scale=1280:-2',
+            '-vf', 'scale=1280:-2,format=yuvj420p',
             '-an',
             'pipe:1'
           ], {
@@ -378,12 +378,12 @@ export class BackendService {
       },
       {
         brand: 'TP-Link Tapo',
-        models: ['C100', 'C200', 'C210', 'C310'],
+        models: ['C100', 'C200', 'C210', 'C310', 'C320WS', 'C520WS', 'C420'],
         defaultPort: 554,
         mainStreamPath: '/stream1',
         subStreamPath: '/stream2',
         authType: 'basic',
-        notes: 'Requires RTSP enabled in Tapo app',
+        notes: 'Requires RTSP enabled in Tapo app. C520WS/C420/C320WS use H.265 main stream — use /stream2 for H.264 sub stream if main stream fails.',
       },
       {
         brand: 'Xiaomi',
