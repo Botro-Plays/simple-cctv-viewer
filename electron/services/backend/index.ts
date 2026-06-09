@@ -288,7 +288,7 @@ export class BackendService {
           ffmpeg.stderr.on('data', (data: Buffer) => {
             const msg = data.toString();
             if (msg.includes('error') || msg.includes('Error')) {
-              console.log(`[FFmpeg] error:`, msg.trim().split('\n')[0]);
+              console.log(`[FFmpeg:${camera.name}] error:`, msg.trim().split('\n')[0]);
             }
           });
 

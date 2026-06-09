@@ -11,6 +11,7 @@ interface VideoPlayerProps {
   style?: React.CSSProperties;
   connectTimeoutMs?: number;
   enabled?: boolean;
+  connectionDelay?: number;
 }
 
 export function VideoPlayer({
@@ -20,6 +21,7 @@ export function VideoPlayer({
   style,
   connectTimeoutMs = 8000,
   enabled = true,
+  connectionDelay = 0,
 }: VideoPlayerProps) {
   const imgRef = useRef<HTMLImageElement>(null);
   const blobUrlRef = useRef<string | null>(null);
@@ -52,11 +54,12 @@ export function VideoPlayer({
     setStatus('loading');
     const abortController = new AbortController();
     let isActive = true;
+    let delayTimer: ReturnType<typeof setTimeout> | null = null;
     let latestFrame = 0;
 
     const img = imgRef.current;
 
-    fetch(streamSrc, { signal: abortController.signal })
+    const startFetch = () => fetch(streamSrc, { signal: abortController.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         if (!response.body) throw new Error('No response body');
@@ -140,21 +143,27 @@ export function VideoPlayer({
         }
 
       })
-      .catch((err) => {
-        if (err.name !== 'AbortError') {
-          console.error(`Stream error (${cameraId.slice(0, 8)}):`, err);
-          if (isActive) {
-            if (autoRetryCountRef.current < 5) {
-              setAutoRetryCount(c => c + 1);
-              setRetryKey(k => k + 1);
-              setStreamStatus(cameraId, { cameraId, status: 'CONNECTING', quality: 'MEDIUM', reconnectCount: autoRetryCountRef.current });
-            } else {
-              setStatus('error');
-              setStreamStatus(cameraId, { cameraId, status: 'ERROR', quality: 'MEDIUM', reconnectCount: autoRetryCountRef.current });
-            }
+    if (connectionDelay > 0) {
+      delayTimer = setTimeout(() => { startFetch().catch(handleError); }, connectionDelay);
+    } else {
+      startFetch().catch(handleError);
+    }
+
+    function handleError(err: any) {
+      if (err.name !== 'AbortError') {
+        console.error(`Stream error (${cameraId.slice(0, 8)}):`, err);
+        if (isActive) {
+          if (autoRetryCountRef.current < 5) {
+            setAutoRetryCount(c => c + 1);
+            setRetryKey(k => k + 1);
+            setStreamStatus(cameraId, { cameraId, status: 'CONNECTING', quality: 'MEDIUM', reconnectCount: autoRetryCountRef.current });
+          } else {
+            setStatus('error');
+            setStreamStatus(cameraId, { cameraId, status: 'ERROR', quality: 'MEDIUM', reconnectCount: autoRetryCountRef.current });
           }
         }
-      });
+      }
+    }
 
     // Fallback: show error if no frame arrives within connectTimeoutMs
     const timeout = setTimeout(() => {
@@ -171,6 +180,7 @@ export function VideoPlayer({
     return () => {
       isActive = false;
       clearTimeout(timeout);
+      if (delayTimer !== null) clearTimeout(delayTimer);
       abortController.abort();
       if (imgRef.current) {
         imgRef.current.src = '';

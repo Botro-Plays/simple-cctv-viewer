@@ -206,10 +206,11 @@ export default function Dashboard({ onAddCamera }: DashboardProps) {
                     boxSizing: 'border-box',
                   }}
                 >
-                  {pageCameras.map((camera) => (
+                  {pageCameras.map((camera, idx) => (
                     <CameraCard
                       key={camera.id}
                       camera={camera}
+                      connectionDelay={idx * 600}
                       onClick={() => handleCameraClick(camera)}
                     />
                   ))}
@@ -272,9 +273,11 @@ export default function Dashboard({ onAddCamera }: DashboardProps) {
 
 function CameraCard({
   camera,
+  connectionDelay,
   onClick,
 }: {
   camera: Camera;
+  connectionDelay?: number;
   onClick: () => void;
 }) {
   return (
@@ -287,6 +290,7 @@ function CameraCard({
         cameraId={camera.id}
         streamType="mjpeg"
         className="w-full h-full"
+        connectionDelay={connectionDelay}
       />
 
       {/* Overlay Header */}
