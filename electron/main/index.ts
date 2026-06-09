@@ -36,17 +36,17 @@ console.warn  = (...a) => { _warn(...a);  pushLog('warn',  a); };
 console.error = (...a) => { _error(...a); pushLog('error', a); };
 // ─────────────────────────────────────────────────────────────────────────────
 
-// Detect portable build and set environment variable
+// Detect portable build data directory.
+// electron-builder sets PORTABLE_EXECUTABLE_DIR to the folder containing the
+// actual .exe file. Only fall back to process.execPath if it was NOT set by
+// electron-builder (i.e. this is an installed build running in-place).
 if (app.isPackaged) {
-  const execPath = path.dirname(process.execPath);
-  // Check if this is a portable build (no installation registry)
-  // Portable builds typically have the executable in a folder with resources
-  const isPortable = fs.existsSync(path.join(execPath, 'resources')) ||
-                     fs.existsSync(path.join(execPath, '..', 'resources'));
-  if (isPortable) {
-    process.env.PORTABLE_EXECUTABLE_DIR = execPath;
-    console.log('Portable build detected, data directory:', execPath);
+  if (process.env.PORTABLE_EXECUTABLE_DIR) {
+    console.log('Portable build detected, data directory:', process.env.PORTABLE_EXECUTABLE_DIR);
   }
+  // Do NOT overwrite PORTABLE_EXECUTABLE_DIR — electron-builder already set it
+  // to the correct location (next to the .exe). Overwriting it with
+  // process.execPath would point to the temp extraction folder instead.
 }
 
 async function initializeServices() {
