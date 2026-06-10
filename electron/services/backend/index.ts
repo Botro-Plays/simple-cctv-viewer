@@ -204,14 +204,20 @@ export class BackendService {
             }
           };
 
-          request.raw.on('close', () => { removeClient(); resolveHandler(); });
-          reply.raw.on('close', () => { removeClient(); resolveHandler(); });
-          reply.raw.on('error', () => { removeClient(); resolveHandler(); });
+          let handlerResolved = false;
+          const resolveOnce = () => { if (!handlerResolved) { handlerResolved = true; resolveHandler(); } };
+
+          request.raw.on('close', () => { removeClient(); resolveOnce(); });
+          reply.raw.on('close', () => { removeClient(); resolveOnce(); });
+          reply.raw.on('error', () => { removeClient(); resolveOnce(); });
         } else {
           // Start new FFmpeg
           if (stream) {
             if (isStale) {
               console.log(`[Stream] FFmpeg stale for camera ${cameraId}, respawning`);
+              for (const [, client] of stream.clients) {
+                try { if (!client.writableEnded && !client.destroyed) client.end(); } catch {}
+              }
             }
             this.killFfmpeg(stream.ffmpeg);
             this.activeStreams.delete(cameraId);
@@ -223,11 +229,12 @@ export class BackendService {
           const ffmpegPath = this.resolveFfmpegPath();
 
           const ffmpeg = spawn(ffmpegPath, [
+            '-stimeout', '10000000',
             '-rtsp_transport', 'tcp',
             '-i', rtspUrl,
             '-f', 'mjpeg',
             '-q:v', '5',
-            '-r', '15',
+            '-r', '10',
             '-vf', 'scale=1280:-2,format=yuvj420p',
             '-an',
             'pipe:1'
@@ -285,21 +292,38 @@ export class BackendService {
             }
           });
 
+          let ffmpegStreamOpened = false;
           ffmpeg.stderr.on('data', (data: Buffer) => {
-            const msg = data.toString();
-            if (msg.includes('error') || msg.includes('Error')) {
-              console.log(`[FFmpeg:${camera.name}] error:`, msg.trim().split('\n')[0]);
+            const msg = data.toString().trim();
+            if (!msg) return;
+            for (const line of msg.split('\n')) {
+              const l = line.trim();
+              if (!l) continue;
+              if (!ffmpegStreamOpened && l.includes('Stream #')) {
+                ffmpegStreamOpened = true;
+                console.log(`[FFmpeg:${camera.name}] stream opened:`, l);
+              } else if (
+                l.includes('error') || l.includes('Error') ||
+                l.includes('Invalid') || l.includes('refused') ||
+                l.includes('Unauthori') || l.includes('Bad Request') ||
+                l.includes('timeout') || l.includes('CSeq') ||
+                l.includes('Connection')
+              ) {
+                console.log(`[FFmpeg:${camera.name}] warn:`, l);
+              }
             }
           });
 
           ffmpeg.on('close', (code: number) => {
-            console.log(`[FFmpeg] closed (code: ${code})`);
-            this.activeStreams.delete(cameraId);
+            console.log(`[FFmpeg:${camera.name}] closed (code: ${code})`);
+            const s = this.activeStreams.get(cameraId);
+            if (s && s.ffmpeg === ffmpeg) this.activeStreams.delete(cameraId);
           });
 
           ffmpeg.on('error', (err: Error) => {
-            console.error(`[FFmpeg] spawn error:`, err.message);
-            this.activeStreams.delete(cameraId);
+            console.error(`[FFmpeg:${camera.name}] spawn error:`, err.message);
+            const s = this.activeStreams.get(cameraId);
+            if (s && s.ffmpeg === ffmpeg) this.activeStreams.delete(cameraId);
           });
 
           stream = {
@@ -310,6 +334,8 @@ export class BackendService {
             lastClientAt: Date.now(),
             lastFrameAt: Date.now(),
           };
+
+          this.activeStreams.set(cameraId, stream);
 
           const clientId = Math.random().toString(36).slice(2, 10);
           stream.clients.set(clientId, reply.raw);
@@ -324,11 +350,12 @@ export class BackendService {
             }
           };
 
-          request.raw.on('close', () => { removeClient(); resolveHandler(); });
-          reply.raw.on('close', () => { removeClient(); resolveHandler(); });
-          reply.raw.on('error', () => { removeClient(); resolveHandler(); });
+          let handlerResolved = false;
+          const resolveOnce = () => { if (!handlerResolved) { handlerResolved = true; resolveHandler(); } };
 
-          this.activeStreams.set(cameraId, stream);
+          request.raw.on('close', () => { removeClient(); resolveOnce(); });
+          reply.raw.on('close', () => { removeClient(); resolveOnce(); });
+          reply.raw.on('error', () => { removeClient(); resolveOnce(); });
         }
 
       }).catch((error: any) => {

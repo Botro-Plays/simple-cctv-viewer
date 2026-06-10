@@ -143,8 +143,9 @@ export function VideoPlayer({
         }
 
       })
-    if (connectionDelay > 0) {
-      delayTimer = setTimeout(() => { startFetch().catch(handleError); }, connectionDelay);
+    const effectiveDelay = retryKey === 0 ? connectionDelay : 0;
+    if (effectiveDelay > 0) {
+      delayTimer = setTimeout(() => { startFetch().catch(handleError); }, effectiveDelay);
     } else {
       startFetch().catch(handleError);
     }
