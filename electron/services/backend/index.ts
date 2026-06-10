@@ -229,7 +229,6 @@ export class BackendService {
           const ffmpegPath = this.resolveFfmpegPath();
 
           const ffmpeg = spawn(ffmpegPath, [
-            '-stimeout', '10000000',
             '-rtsp_transport', 'tcp',
             '-i', rtspUrl,
             '-f', 'mjpeg',
