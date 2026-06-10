@@ -3,6 +3,7 @@ declare global {
   interface Window {
     electronAPI: {
       getVersion: () => Promise<string>;
+      getTemplates: () => Promise<any[]>;
       getCameras: () => Promise<any[]>;
       addCamera: (camera: any) => Promise<any>;
       updateCamera: (id: string, camera: any) => Promise<any>;

@@ -46,36 +46,12 @@ export default function Cameras({ showAddForm: externalShowAddForm, onFormClose 
   };
 
   const loadTemplates = async () => {
-    // TODO: Load from backend API
-    setTemplates([
-      {
-        brand: 'Hikvision',
-        models: ['DS-2CD2xxx', 'DS-2CD3xxx', 'DS-2CD4xxx'],
-        defaultPort: 554,
-        mainStreamPath: '/Streaming/Channels/101',
-        subStreamPath: '/Streaming/Channels/102',
-        authType: 'digest',
-        notes: 'Most Hikvision cameras use digest auth',
-      },
-      {
-        brand: 'Dahua',
-        models: ['IPC-HFW', 'IPC-HDB', 'SD4xxx'],
-        defaultPort: 554,
-        mainStreamPath: '/cam/realmonitor?channel=1&subtype=0',
-        subStreamPath: '/cam/realmonitor?channel=1&subtype=1',
-        authType: 'digest',
-        notes: 'Subtype 0=main, 1=sub',
-      },
-      {
-        brand: 'TP-Link Tapo',
-        models: ['C100', 'C200', 'C210', 'C310'],
-        defaultPort: 554,
-        mainStreamPath: '/stream1',
-        subStreamPath: '/stream2',
-        authType: 'basic',
-        notes: 'Requires RTSP enabled in Tapo app',
-      },
-    ]);
+    try {
+      const data = await electronAPI.getTemplates();
+      setTemplates(data);
+    } catch (error) {
+      console.error('Failed to load templates:', error);
+    }
   };
 
   const handleSave = async (camera: Omit<Camera, 'id' | 'createdAt' | 'updatedAt'>) => {

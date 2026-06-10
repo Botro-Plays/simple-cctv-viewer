@@ -4,6 +4,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // App info
   getVersion: () => ipcRenderer.invoke('app:getVersion'),
   
+  // Templates
+  getTemplates: () => ipcRenderer.invoke('templates:get'),
+
   // Cameras
   getCameras: () => ipcRenderer.invoke('cameras:getAll'),
   addCamera: (camera: any) => ipcRenderer.invoke('cameras:add', camera),

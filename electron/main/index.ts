@@ -186,6 +186,13 @@ ipcMain.handle('logs:openWindow', () => {
   logsWindow.on('closed', () => { logsWindow = null; });
 });
 
+// Templates IPC handler
+ipcMain.handle('templates:get', async () => {
+  const response = await fetch(`${API_BASE}/api/templates`);
+  if (!response.ok) throw new Error(`Failed to get templates: HTTP ${response.status}`);
+  return response.json();
+});
+
 // Camera IPC handlers - proxy to backend
 ipcMain.handle('cameras:getAll', async () => {
   const response = await fetch(`${API_BASE}/api/cameras`);

@@ -156,7 +156,7 @@ function About() {
           <div className="border rounded-lg p-4 bg-card">
             <h2 className="text-lg font-semibold mb-2">Supported Brands</h2>
             <p className="text-sm text-muted-foreground">
-              Hikvision, Dahua, TP-Link Tapo, Xiaomi, Reolink, Ezviz, IMOU
+              Hikvision, Dahua, TP-Link Tapo, Xiaomi, Reolink, Ezviz, IMOU (7 brands with pre-filled RTSP templates)
             </p>
           </div>
           <div className="border rounded-lg p-4 bg-card">
