@@ -1,33 +1,51 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" shape-rendering="geometricPrecision">
-  <!-- Dark background -->
-  <rect x="0" y="0" width="512" height="512" rx="80" fill="#111118"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1e3a8a"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <radialGradient id="lens" cx="205" cy="200" r="162" gradientUnits="userSpaceOnUse">
+      <stop offset="0%"   stop-color="#dbeafe"/>
+      <stop offset="28%"  stop-color="#93c5fd"/>
+      <stop offset="65%"  stop-color="#1d4ed8"/>
+      <stop offset="100%" stop-color="#1e3a8a"/>
+    </radialGradient>
+    <radialGradient id="iris" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#1e40af"/>
+    </radialGradient>
+  </defs>
 
-  <!-- Outer ring / bezel -->
-  <circle cx="256" cy="256" r="170" fill="none" stroke="#be123c" stroke-width="14"/>
+  <!-- Background -->
+  <rect x="0" y="0" width="512" height="512" rx="88" fill="url(#bg)"/>
 
-  <!-- Lens housing -->
-  <circle cx="256" cy="256" r="150" fill="#0f0f1a" stroke="#1f1f2e" stroke-width="4"/>
+  <!-- Outer camera housing -->
+  <circle cx="256" cy="256" r="190" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.28)" stroke-width="10"/>
 
-  <!-- Inner ring -->
-  <circle cx="256" cy="256" r="110" fill="none" stroke="#9f1239" stroke-width="6"/>
+  <!-- Lens body (glass) -->
+  <circle cx="256" cy="256" r="166" fill="url(#lens)"/>
+
+  <!-- Mid focus ring -->
+  <circle cx="256" cy="256" r="124" fill="none" stroke="rgba(255,255,255,0.32)" stroke-width="7"/>
 
   <!-- Iris -->
-  <circle cx="256" cy="256" r="85" fill="#be123c"/>
+  <circle cx="256" cy="256" r="100" fill="url(#iris)"/>
 
-  <!-- Inner glow ring -->
-  <circle cx="256" cy="256" r="55" fill="none" stroke="#fb7185" stroke-width="3" opacity="0.6"/>
+  <!-- Inner ring -->
+  <circle cx="256" cy="256" r="68"  fill="none" stroke="rgba(255,255,255,0.38)" stroke-width="4"/>
 
   <!-- Pupil -->
-  <circle cx="256" cy="256" r="38" fill="#000"/>
+  <circle cx="256" cy="256" r="45"  fill="#0f172a"/>
 
-  <!-- Lens glare -->
-  <ellipse cx="220" cy="215" rx="28" ry="16" fill="rgba(255,255,255,0.18)" transform="rotate(-25 220 215)"/>
+  <!-- Glare -->
+  <ellipse cx="214" cy="208" rx="38" ry="21" fill="rgba(255,255,255,0.54)" transform="rotate(-30 214 208)"/>
+  <circle cx="272" cy="274" r="9" fill="rgba(255,255,255,0.20)"/>
 
-  <!-- Gear Overlay (Installer) -->
-  <circle cx="400" cy="400" r="70" fill="#22c55e" stroke="#16a34a" stroke-width="4"/>
-  <circle cx="400" cy="400" r="25" fill="#111118"/>
-  <rect x="390" y="300" width="20" height="35" fill="#22c55e"/>
-  <rect x="390" y="465" width="20" height="35" fill="#22c55e"/>
-  <rect x="300" y="390" width="35" height="20" fill="#22c55e"/>
-  <rect x="465" y="390" width="35" height="20" fill="#22c55e"/>
+  <!-- REC indicator -->
+  <circle cx="406" cy="106" r="32" fill="#ef4444"/>
+  <circle cx="406" cy="106" r="15" fill="#fca5a5"/>
+
+  <!-- Install badge (green, bottom-right) -->
+  <circle cx="400" cy="400" r="74" fill="#15803d" stroke="#166534" stroke-width="5"/>
+  <path d="M382 366 L382 402 L368 402 L400 436 L432 402 L418 402 L418 366 Z" fill="white"/>
 </svg>
