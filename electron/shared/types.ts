@@ -53,4 +53,5 @@ export interface Settings {
   defaultQuality: 'LOW' | 'MEDIUM' | 'HIGH';
   retentionDays: number;
   maxRecordingSizeGB: number;
+  gridSize?: '1x1' | '2x2' | '3x3' | '4x4';
 }

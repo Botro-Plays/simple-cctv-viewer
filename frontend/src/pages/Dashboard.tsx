@@ -13,9 +13,19 @@ interface DashboardProps {
   onAddCamera: () => void;
 }
 
+type GridSize = '1x1' | '2x2' | '3x3' | '4x4';
+
+function autoGridSize(count: number): GridSize {
+  if (count <= 1) return '1x1';
+  if (count === 2) return '2x2';
+  if (count === 3) return '3x3';
+  return '4x4';
+}
+
 export default function Dashboard({ onAddCamera }: DashboardProps) {
   const { cameras, setCameras, isLoading, setLoading, setError } = useCameraStore();
-  const [gridSize, setGridSize] = useState<'1x1' | '2x2' | '3x3' | '4x4'>('2x2');
+  const [gridSize, setGridSize] = useState<GridSize>('2x2');
+  const [gridSettingLoaded, setGridSettingLoaded] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [expandedCamera, setExpandedCamera] = useState<Camera | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -47,6 +57,24 @@ export default function Dashboard({ onAddCamera }: DashboardProps) {
   useEffect(() => {
     loadCameras();
   }, []);
+
+  // Apply auto-detect once both cameras and settings are loaded
+  useEffect(() => {
+    if (!isLoading && gridSettingLoaded) return; // already applied
+    if (isLoading) return;
+    // Settings not yet fetched; load them now to pick up saved gridSize
+    electronAPI.getSettings().then((s: any) => {
+      if (s?.gridSize) {
+        setGridSize(s.gridSize);
+      } else {
+        setGridSize(autoGridSize(cameras.filter((c: any) => c.enabled).length));
+      }
+      setGridSettingLoaded(true);
+    }).catch(() => {
+      setGridSize(autoGridSize(cameras.filter((c: any) => c.enabled).length));
+      setGridSettingLoaded(true);
+    });
+  }, [isLoading]);
 
   const loadCameras = async () => {
     try {
@@ -143,8 +171,10 @@ export default function Dashboard({ onAddCamera }: DashboardProps) {
             <select
               value={gridSize}
               onChange={(e) => {
-                setGridSize(e.target.value as any);
+                const next = e.target.value as GridSize;
+                setGridSize(next);
                 setCurrentPage(0);
+                electronAPI.updateSettings({ gridSize: next }).catch(() => {});
               }}
               className="px-2 md:px-3 py-1.5 rounded-md border border-input bg-background text-xs md:text-sm"
             >
