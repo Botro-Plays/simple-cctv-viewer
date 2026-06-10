@@ -7,6 +7,7 @@ import { backendService } from '../services/backend';
 import { API_BASE } from '../shared/config';
 
 let mainWindow: BrowserWindow | null = null;
+let logsWindow: BrowserWindow | null = null;
 let powerSaveBlockId: number | null = null;
 
 // ── Log collector ────────────────────────────────────────────────────────────
@@ -25,6 +26,9 @@ function pushLog(level: string, args: any[]) {
   if (logBuffer.length > 500) logBuffer.shift();
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.webContents.send('logs:entry', entry);
+  }
+  if (logsWindow && !logsWindow.isDestroyed()) {
+    logsWindow.webContents.send('logs:entry', entry);
   }
 }
 
@@ -151,6 +155,36 @@ ipcMain.handle('app:getVersion', () => app.getVersion());
 ipcMain.handle('logs:get', () => [...logBuffer]);
 
 ipcMain.on('logs:clear', () => { logBuffer.length = 0; });
+
+ipcMain.handle('logs:openWindow', () => {
+  if (logsWindow && !logsWindow.isDestroyed()) {
+    logsWindow.focus();
+    return;
+  }
+
+  logsWindow = new BrowserWindow({
+    width: 960,
+    height: 600,
+    minWidth: 600,
+    minHeight: 300,
+    title: 'CCTV Viewer – Logs',
+    autoHideMenuBar: true,
+    webPreferences: {
+      preload: path.join(__dirname, '../preload/index.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+    },
+    icon: path.join(__dirname, '../../resources/icons/icon.png'),
+  });
+
+  if (isDev && process.env.ELECTRON_RENDERER_URL) {
+    logsWindow.loadURL(`${process.env.ELECTRON_RENDERER_URL}?view=logs`);
+  } else {
+    logsWindow.loadFile(path.join(__dirname, '../renderer/index.html'), { query: { view: 'logs' } });
+  }
+
+  logsWindow.on('closed', () => { logsWindow = null; });
+});
 
 // Camera IPC handlers - proxy to backend
 ipcMain.handle('cameras:getAll', async () => {

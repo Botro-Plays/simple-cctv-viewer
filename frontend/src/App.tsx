@@ -2,18 +2,19 @@ import React, { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard';
 import Cameras from './pages/Cameras';
 import Settings from './pages/Settings';
-import LogPanel from './components/LogPanel';
+import Logs from './pages/Logs';
 import { Button } from './components/ui/button';
 import { Video, Settings as SettingsIcon, Info, RefreshCw, Moon, Sun, Terminal } from 'lucide-react';
 import { electronAPI } from './lib/api';
 
+const IS_LOGS_WINDOW = new URLSearchParams(window.location.search).get('view') === 'logs';
+
 type Page = 'dashboard' | 'cameras' | 'settings' | 'about';
 
-function App() {
+function MainApp() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
   const [showAddCamera, setShowAddCamera] = useState(false);
   const [isDark, setIsDark] = useState(true);
-  const [showLogsPanel, setShowLogsPanel] = useState(false);
 
   useEffect(() => {
     // Check localStorage for saved theme preference
@@ -91,8 +92,8 @@ function App() {
           <span className="hidden sm:inline">Settings</span>
         </Button>
         <Button
-          variant={showLogsPanel ? 'default' : 'ghost'}
-          onClick={() => setShowLogsPanel(v => !v)}
+          variant="ghost"
+          onClick={() => electronAPI.openLogsWindow().catch(() => {})}
           size="sm"
           className="whitespace-nowrap"
         >
@@ -121,7 +122,6 @@ function App() {
       <main className="flex-1 min-h-0 overflow-hidden">
         {renderPage()}
       </main>
-      {showLogsPanel && <LogPanel onClose={() => setShowLogsPanel(false)} />}
     </div>
   );
 }
@@ -173,4 +173,19 @@ function About() {
   );
 }
 
-export default App;
+function LogsWindowContent() {
+  useEffect(() => {
+    const t = localStorage.getItem('theme');
+    if (t === 'light') { document.documentElement.classList.remove('dark'); }
+    else { document.documentElement.classList.add('dark'); }
+  }, []);
+  return (
+    <div className="h-screen bg-[#0d0d0d] overflow-hidden">
+      <Logs />
+    </div>
+  );
+}
+
+export default function App() {
+  return IS_LOGS_WINDOW ? <LogsWindowContent /> : <MainApp />;
+}

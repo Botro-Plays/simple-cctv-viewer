@@ -18,6 +18,7 @@ declare global {
       removeRecordingStatusListener: () => void;
       getLogs: () => Promise<{ id: number; ts: string; level: string; msg: string }[]>;
       clearLogs: () => void;
+      openLogsWindow: () => Promise<void>;
       onLog: (callback: (entry: { id: number; ts: string; level: string; msg: string }) => void) => void;
       removeLogListener: () => void;
     };
