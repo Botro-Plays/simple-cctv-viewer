@@ -2,17 +2,18 @@ import React, { useState, useEffect } from 'react';
 import Dashboard from './pages/Dashboard';
 import Cameras from './pages/Cameras';
 import Settings from './pages/Settings';
-import Logs from './pages/Logs';
+import LogPanel from './components/LogPanel';
 import { Button } from './components/ui/button';
 import { Video, Settings as SettingsIcon, Info, RefreshCw, Moon, Sun, Terminal } from 'lucide-react';
 import { electronAPI } from './lib/api';
 
-type Page = 'dashboard' | 'cameras' | 'settings' | 'logs' | 'about';
+type Page = 'dashboard' | 'cameras' | 'settings' | 'about';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('dashboard');
   const [showAddCamera, setShowAddCamera] = useState(false);
   const [isDark, setIsDark] = useState(true);
+  const [showLogsPanel, setShowLogsPanel] = useState(false);
 
   useEffect(() => {
     // Check localStorage for saved theme preference
@@ -48,9 +49,6 @@ function App() {
         </div>
         <div className={currentPage === 'settings' ? 'h-full' : 'hidden'}>
           <Settings />
-        </div>
-        <div className={currentPage === 'logs' ? 'h-full' : 'hidden'}>
-          <Logs />
         </div>
         <div className={currentPage === 'about' ? 'h-full' : 'hidden'}>
           <About />
@@ -93,8 +91,8 @@ function App() {
           <span className="hidden sm:inline">Settings</span>
         </Button>
         <Button
-          variant={currentPage === 'logs' ? 'default' : 'ghost'}
-          onClick={() => setCurrentPage('logs')}
+          variant={showLogsPanel ? 'default' : 'ghost'}
+          onClick={() => setShowLogsPanel(v => !v)}
           size="sm"
           className="whitespace-nowrap"
         >
@@ -123,6 +121,7 @@ function App() {
       <main className="flex-1 min-h-0 overflow-hidden">
         {renderPage()}
       </main>
+      {showLogsPanel && <LogPanel onClose={() => setShowLogsPanel(false)} />}
     </div>
   );
 }

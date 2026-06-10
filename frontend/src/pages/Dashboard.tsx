@@ -4,7 +4,7 @@ import { useCameraStore } from '../stores/camera-store';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { Video, Plus, X } from 'lucide-react';
+import { Video, Plus, X, Eye, EyeOff } from 'lucide-react';
 import { electronAPI } from '../lib/api';
 import { VideoPlayer } from '../components/VideoPlayer';
 import { useStreamStore } from '../stores/stream-store';
@@ -280,12 +280,14 @@ function CameraCard({
   connectionDelay?: number;
   onClick: () => void;
 }) {
+  const [isPrivate, setIsPrivate] = useState(false);
+
   return (
     <div
       className="relative w-full h-full overflow-hidden bg-black rounded-md cursor-pointer ring-1 ring-white/10 hover:ring-2 hover:ring-primary transition-all"
       onClick={onClick}
     >
-      {/* Video fills entire cell */}
+      {/* Video always runs so stream stays alive */}
       <VideoPlayer
         cameraId={camera.id}
         streamType="mjpeg"
@@ -293,18 +295,37 @@ function CameraCard({
         connectionDelay={connectionDelay}
       />
 
+      {/* Privacy overlay — covers video but keeps stream running */}
+      {isPrivate && (
+        <div className="absolute inset-0 bg-black/95 flex flex-col items-center justify-center gap-2 z-20">
+          <EyeOff className="w-8 h-8 text-gray-600" />
+          <p className="text-[10px] text-gray-500 font-medium">Privacy Mode</p>
+        </div>
+      )}
+
       {/* Overlay Header */}
-      <div className="absolute top-0 left-0 right-0 z-10 bg-gradient-to-b from-black/75 to-transparent px-2 py-1.5 pointer-events-none">
+      <div className="absolute top-0 left-0 right-0 z-30 bg-gradient-to-b from-black/75 to-transparent px-2 py-1.5">
         <div className="flex items-center justify-between gap-1">
-          <h3 className="text-white text-[10px] md:text-xs font-medium truncate leading-tight">
+          <h3 className="text-white text-[10px] md:text-xs font-medium truncate leading-tight pointer-events-none">
             {camera.name}
           </h3>
-          <Badge
-            variant="outline"
-            className="bg-black/40 text-white border-white/20 text-[9px] md:text-[10px] shrink-0 px-1 py-0 leading-tight"
-          >
-            {camera.brand}
-          </Badge>
+          <div className="flex items-center gap-1">
+            <Badge
+              variant="outline"
+              className="bg-black/40 text-white border-white/20 text-[9px] md:text-[10px] shrink-0 px-1 py-0 leading-tight pointer-events-none"
+            >
+              {camera.brand}
+            </Badge>
+            <button
+              onClick={(e) => { e.stopPropagation(); setIsPrivate(p => !p); }}
+              title={isPrivate ? 'Disable privacy mode' : 'Enable privacy mode'}
+              className="p-0.5 rounded text-white/60 hover:text-white hover:bg-black/40 transition-colors"
+            >
+              {isPrivate
+                ? <EyeOff className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                : <Eye className="w-3 h-3 md:w-3.5 md:h-3.5" />}
+            </button>
+          </div>
         </div>
       </div>
     </div>

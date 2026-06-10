@@ -231,7 +231,7 @@ export function VideoPlayer({
           <Camera className="w-12 h-12 text-gray-600" />
           <p className="text-sm text-gray-500">Stream disconnected</p>
           <button
-            onClick={handleManualRetry}
+            onClick={(e) => { e.stopPropagation(); handleManualRetry(); }}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-xs rounded-lg transition-colors"
           >
             <RefreshCw className="w-3 h-3" /> Retry now
